@@ -209,7 +209,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="eev-Rz-bRH"/>
                     <connections>
-                        <outlet property="advıceLabel" destination="r83-N3-Ash" id="88y-8E-ViM"/>
+                        <outlet property="adviceLabel" destination="9IV-CT-mxw" id="YgP-6m-1es"/>
+                        <outlet property="background" destination="r83-N3-Ash" id="gqs-CO-ice"/>
                         <outlet property="resultLabel" destination="VU9-2W-Sd5" id="m5b-T9-dpy"/>
                     </connections>
                 </viewController>
