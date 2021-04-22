@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  TindeClone
+//  TinderClone
 //
 //  Created by YUNUS EMRE SAÇMA on 22.04.2021.
 //
