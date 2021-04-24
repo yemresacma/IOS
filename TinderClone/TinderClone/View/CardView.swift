@@ -19,18 +19,12 @@ class CardView: UIView {
     private let infoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
-        
-        let attributedText = NSMutableAttributedString(string: "Jane Doe", attributes: [.font:UIFont.systemFont(ofSize: 32, weight: .heavy), .foregroundColor: UIColor.white])
-        attributedText.append(NSAttributedString(string: "  20", attributes: [.font:UIFont.systemFont(ofSize: 24), .foregroundColor: UIColor.white]))
-        label.attributedText = attributedText
-        
         return label
     }()
     
     private let imageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
-        iv.image = #imageLiteral(resourceName: "lady4c")
         return iv
     }()
     
@@ -41,12 +35,18 @@ class CardView: UIView {
     }()
     
     private let gradiendLayer = CAGradientLayer()
+    private let viewModel: CardViewModel
     
     // MARK: - LifeCycle    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(viewModel: CardViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
+        
+        imageView.image = viewModel.user.images.first
         
         configureGestureRecognizer()
+        
+        infoLabel.attributedText = viewModel.userInfoText
         
         backgroundColor = .systemPurple
         layer.cornerRadius = 10
