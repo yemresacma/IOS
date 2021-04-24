@@ -49,6 +49,7 @@ extension HomeViewController {
         deckView.addSubview(cardView1)
         deckView.addSubview(cardView2)
 
+        cardView1.fillSuperview()
         cardView2.fillSuperview()
     }
 }

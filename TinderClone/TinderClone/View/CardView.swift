@@ -7,10 +7,15 @@
 
 import UIKit
 
+enum SwipeDirection: Int {
+    case left = -1
+    case noDirection = 0
+    case right = 1
+}
+
 class CardView: UIView {
     
     // MARK: - Properties
-
     private let infoLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
@@ -24,7 +29,7 @@ class CardView: UIView {
     
     private let imageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleToFill
+        iv.contentMode = .scaleAspectFill
         iv.image = #imageLiteral(resourceName: "lady4c")
         return iv
     }()
@@ -40,14 +45,17 @@ class CardView: UIView {
     // MARK: - LifeCycle    
     override init(frame: CGRect) {
         super.init(frame: frame)
-         
+        
+        configureGestureRecognizer()
+        
         backgroundColor = .systemPurple
         layer.cornerRadius = 10
         clipsToBounds = true
                 
         addSubview(imageView)
+        addSubview(imageView)
         imageView.fillSuperview()
-
+            
         configureGradientLayer()
         
         addSubview(infoLabel)
@@ -60,6 +68,7 @@ class CardView: UIView {
     }
     
     override func layoutSubviews() {
+        // sets the height width according to cardView
         gradiendLayer.frame = self.frame
     }
     
@@ -68,10 +77,77 @@ class CardView: UIView {
     }
 }
 
+// MARK: - Actions
+extension CardView {
+    @objc func handlePanGesture(sender: UIPanGestureRecognizer) {
+
+        switch sender.state {
+        case .began:
+            superview?.subviews.forEach({
+                $0.layer.removeAllAnimations()
+            })
+        case .changed:
+            panCard(sender)
+        case .ended:
+            resetCardPosition(sender: sender)
+        default: break
+            
+        }
+    }
+
+    @objc func handleTapGesture(sender: UITapGestureRecognizer) {
+        print("TAP ")
+    }
+}
+
 // MARK: - Helpers
 extension CardView {
     func configureGradientLayer() {
         gradiendLayer.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         gradiendLayer.locations = [0.5, 1.1]
-        layer.addSublayer(gradiendLayer)    }
+        layer.addSublayer(gradiendLayer)
+    }
+    
+    func configureGestureRecognizer() {
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        addGestureRecognizer(panRecognizer )
+        
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        addGestureRecognizer(tapRecognizer)
+    }
+    
+    func panCard(_ sender: UIPanGestureRecognizer) {
+        let translation = sender.translation(in: nil)
+        let degrees = translation.x / 20
+        let angle = degrees  * .pi / 180
+        let rotationalTransform = CGAffineTransform(rotationAngle: angle)
+        self.transform = rotationalTransform.translatedBy(x: translation.x, y: translation.y)
+    }
+    
+    func resetCardPosition(sender: UIPanGestureRecognizer) {
+        var direction: SwipeDirection = .noDirection
+        
+        // if user swiped the card with enough pan distance, assign it direction
+        print(sender.translation(in: nil).x)
+        if sender.translation(in: nil).x > 100 {
+            direction = .right
+        } else if (sender.translation(in: nil).x < -100) {
+            direction = .left
+        }
+        
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
+            if direction != .noDirection {
+                let xTranslation = CGFloat(direction.rawValue) * 1000
+                let offScreenTransform = self.transform.translatedBy(x: xTranslation, y: 0)
+                self.transform = offScreenTransform
+            } else {
+                self.transform = .identity
+            }
+        }) { _ in
+            if direction != .noDirection {
+                self.removeFromSuperview()
+            }
+        }
+        
+    }
 }
