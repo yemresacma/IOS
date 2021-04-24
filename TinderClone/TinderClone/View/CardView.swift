@@ -96,7 +96,15 @@ extension CardView {
     }
 
     @objc func handleTapGesture(sender: UITapGestureRecognizer) {
-        print("TAP ")
+        let showNextPhoto = sender.location(in: nil).x > self.frame.width / 2
+        
+        if showNextPhoto {
+            viewModel.showNextPhoto()
+        } else {
+            viewModel.showPreviousPhoto()
+        }
+        
+        imageView.image = viewModel.imageToShow
     }
 }
 
